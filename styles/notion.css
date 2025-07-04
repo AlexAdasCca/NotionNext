@@ -196,9 +196,15 @@
 
 .medium-zoom-overlay {
   z-index: 300;
-  -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
-  transform: translateZ(0);
+  /* -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px); */
+  /* 移除高性能开销的模糊滤镜 */
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+
+  /* 替代方案：仅变暗 */
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  transition: background-color 0.3s ease;
 }
 
 .medium-zoom-image {
