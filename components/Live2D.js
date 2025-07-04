@@ -71,8 +71,8 @@ export default function Live2D() {
       if (!canvas) return
 
       // 计算新坐标(考虑到使用了缩放，所以位置判断也需要考虑这一点)
-      const newX = e.clientX - offset.current.x // 新X坐标
-      const newY = e.clientY - offset.current.y // 新Y坐标
+      const newX = e.clientX - offset.current.x * scale // 新X坐标
+      const newY = e.clientY - offset.current.y * scale // 新Y坐标
       const scaledWidth = canvas.offsetWidth * scale // 缩放后的宽度
       const scaledHeight = canvas.offsetHeight * scale // 缩放后的高度
       const maxX = window.innerWidth - scaledWidth // 最大X坐标
@@ -129,12 +129,13 @@ export default function Live2D() {
     }
   }, [])
 
-  function handleMouseDown(e) {
+  const handleMouseDown = (e) => {
+    if (e.target !== canvasRef.current) return
     isDragging.current = true
     const rect = canvasRef.current.getBoundingClientRect()
     offset.current = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      x: (e.clientX - rect.left) / scale,
+      y: (e.clientY - rect.top) / scale
     }
   }
 
