@@ -155,41 +155,25 @@ const processDisableDatabaseUrl = () => {
 /**
  * gallery视图，点击后是放大图片还是跳转到gallery的内部页面
  */
-const processGalleryImg = (zoom, zoomRef) => {
+const processGalleryImg = zoom => {
   setTimeout(() => {
-    if (!isBrowser || !zoom) return
-
-    const imgList = document?.querySelectorAll('.notion-collection-card-cover img')
-    if (imgList) {
-      zoom.attach([...imgList])
-    }
-
-    const cards = document.querySelectorAll('.notion-gallery-view a.notion-collection-card')
-    for (const card of cards) {
-      card.removeAttribute('href')
-      card.addEventListener('click', e => {
-        if (e.target.tagName !== 'IMG') {
-          e.preventDefault()
-          e.stopPropagation()
+    if (isBrowser) {
+      const imgList = document?.querySelectorAll(
+        '.notion-collection-card-cover img'
+      )
+      if (imgList && zoom) {
+        for (let i = 0; i < imgList.length; i++) {
+          zoom.attach(imgList[i])
         }
-      })
-    }
-
-    // 点击遮罩层或图片时关闭
-    document.body.addEventListener('click', e => {
-      const zoomInstance = zoomRef?.current
-      const isImageClick = e.target.classList.contains('medium-zoom-image')
-      const isOverlayClick = e.target.classList.contains('medium-zoom-overlay')
-      const isPreviewMode = document.body.classList.contains('medium-zoom--opened')
-
-      if (!zoomInstance || !zoomInstance.getZoomedImage()) return
-      if (!isImageClick && isOverlayClick && isPreviewMode) {
-        zoomInstance.close()
       }
-    })
+
+      const cards = document.getElementsByClassName('notion-collection-card')
+      for (const e of cards) {
+        e.removeAttribute('href')
+      }
+    }
   }, 800)
 }
-
 
 /**
  * 根据url参数自动滚动到锚位置
