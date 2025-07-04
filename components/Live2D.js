@@ -62,8 +62,8 @@ export default function Live2D() {
       isDragging.current = true
       const rect = canvas.getBoundingClientRect()
       offset.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+        x: (e.clientX - rect.left) / scale,
+        y: (e.clientY - rect.top) / scale
       }
     }
 
