@@ -175,7 +175,7 @@ const processGalleryImg = (zoom, zoomRef) => {
       })
     }
 
-    // 更安全的关闭逻辑，仅点击遮罩层时关闭
+    // 点击遮罩层时关闭预览
     document.body.addEventListener('click', e => {
       const zoomInstance = zoomRef?.current
       const isImageClick = e.target.classList.contains('medium-zoom-image')
@@ -186,6 +186,15 @@ const processGalleryImg = (zoom, zoomRef) => {
       if (!isImageClick && isOverlayClick && isPreviewMode) {
         zoomInstance.close()
       }
+
+      // 稍后重新 attach 一次，刷新状态
+      setTimeout(() => {
+        zoomInstance.detach()
+        const imgList = document?.querySelectorAll('.notion-collection-card-cover img')
+        if (imgList?.length) {
+          zoomInstance.attach([...imgList])
+        }
+      }, 500) // 在动画结束后执行
     })
   }, 800)
 }
