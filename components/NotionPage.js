@@ -40,7 +40,7 @@ const NotionPage = ({ post, className }) => {
     // 相册视图点击禁止跳转，只能放大查看图片
     if (POST_DISABLE_GALLERY_CLICK) {
       // 针对页面中的gallery视图，点击后是放大图片还是跳转到gallery的内部页面
-      processGalleryImg(zoomRef?.current)
+      processGalleryImg(zoomRef?.current, zoomRef)
     }
 
     // 页内数据库点击禁止跳转，只能查看
