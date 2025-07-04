@@ -84,6 +84,9 @@ export default function Live2D() {
       const clampedX = Math.max(0, Math.min(newX, maxX))
       const clampedY = Math.max(0, Math.min(newY, maxY))
 
+      canvas.style.left = `${clampedX}px`
+      canvas.style.top = `${clampedY}px`
+
       setPosition({ x: clampedX, y: clampedY }) // 保存位置状态
     }
 
