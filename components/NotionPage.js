@@ -29,30 +29,6 @@ const NotionPage = ({ post, className }) => {
 
   const zoomRef = useRef(zoom ? zoom.clone() : null)
   const IMAGE_ZOOM_IN_WIDTH = siteConfig('IMAGE_ZOOM_IN_WIDTH', 1200)
-
-  useEffect(() => {
-    if (!isBrowser) return
-  
-    const handleClick = e => {
-      const zoomInstance = zoomRef.current
-      if (!zoomInstance || !zoomInstance.getZoomedImage()) return
-  
-      const isImageClick = e.target.classList.contains('medium-zoom-image')
-      const isOverlayClick = e.target.classList.contains('medium-zoom-overlay')
-      const isPreviewMode = document.body.classList.contains('medium-zoom--opened')
-  
-      if (!isImageClick && isOverlayClick && isPreviewMode) {
-        zoomInstance.close()
-      }
-    }
-  
-    document.body.addEventListener('click', handleClick)
-  
-    return () => {
-      document.body.removeEventListener('click', handleClick)
-    }
-  }, [])
-
   // 页面首次打开时执行的勾子
   useEffect(() => {
     // 检测当前的url并自动滚动到对应目标
@@ -179,7 +155,7 @@ const processDisableDatabaseUrl = () => {
 /**
  * gallery视图，点击后是放大图片还是跳转到gallery的内部页面
  */
-const processGalleryImg = (zoom) => {
+const processGalleryImg = (zoom, zoomRef) => {
   setTimeout(() => {
     if (!isBrowser || !zoom) return
 
@@ -191,14 +167,26 @@ const processGalleryImg = (zoom) => {
     const cards = document.getElementsByClassName('notion-collection-card')
     for (const card of cards) {
       card.removeAttribute('href')
-
       card.addEventListener('click', e => {
         if (e.target.tagName !== 'IMG') {
           e.preventDefault()
           e.stopPropagation()
         }
-      }, { once: true }) // once 避免重复绑定
+      })
     }
+
+    // 更安全的关闭逻辑，仅点击遮罩层时关闭
+    document.body.addEventListener('click', e => {
+      const zoomInstance = zoomRef?.current
+      const isImageClick = e.target.classList.contains('medium-zoom-image')
+      const isOverlayClick = e.target.classList.contains('medium-zoom-overlay')
+      const isPreviewMode = document.body.classList.contains('medium-zoom--opened')
+
+      if (!zoomInstance || !zoomInstance.getZoomedImage()) return
+      if (!isImageClick && isOverlayClick && isPreviewMode) {
+        zoomInstance.close()
+      }
+    })
   }, 800)
 }
 
