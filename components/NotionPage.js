@@ -188,7 +188,7 @@ const processGalleryImg = (zoom) => {
       zoom.attach([...imgList])
     }
 
-    const cards = document.querySelectorAll('.notion-gallery-view a.notion-collection-card')
+    const cards = document.getElementsByClassName('notion-collection-card')
     for (const card of cards) {
       card.removeAttribute('href')
 
