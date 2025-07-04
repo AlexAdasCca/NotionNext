@@ -2,7 +2,7 @@
 import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
 import { isMobile, loadExternalResource } from '@/lib/utils'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 /**
  * 网页动画
