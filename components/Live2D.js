@@ -62,33 +62,27 @@ export default function Live2D() {
       isDragging.current = true
       const rect = canvas.getBoundingClientRect()
       offset.current = {
-        x: (e.clientX - rect.left),
-        y: (e.clientY - rect.top)
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
       }
     }
 
     const handleMouseMove = (e) => {
-      if (!isDragging.current) return
+      if (!isDragging.current || !canvasRef.current) return
+    
       const canvas = canvasRef.current
-      if (!canvas) return
-
+    
       const newX = e.clientX - offset.current.x
       const newY = e.clientY - offset.current.y
-
-      const scaledWidth = canvas.offsetWidth * scale
-      const scaledHeight = canvas.offsetHeight * scale
-
-      const maxX = window.innerWidth - scaledWidth
-      const maxY = window.innerHeight - scaledHeight
-
-      const clampedX = Math.max(0, Math.min(newX, maxX))
-      const clampedY = Math.max(0, Math.min(newY, maxY))
-
+    
+      const clampedX = Math.max(0, Math.min(newX, window.innerWidth - width * scale))
+      const clampedY = Math.max(0, Math.min(newY, window.innerHeight - height * scale))
+    
       canvas.style.left = `${clampedX}px`
       canvas.style.top = `${clampedY}px`
-
-      setPosition({ x: clampedX, y: clampedY }) // 保存位置状态
-    }
+    
+      setPosition({ x: clampedX, y: clampedY })
+    }    
 
     const handleMouseUp = () => {
       isDragging.current = false
