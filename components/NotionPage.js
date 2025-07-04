@@ -188,6 +188,13 @@ const processGalleryImg = zoom => {
         if (!e.target.closest('.medium-zoom-image')) {
           zoomInstance.close()
         }
+
+        setTimeout(() => {
+          if (img) {
+            zoomInstance.detach(img)
+            zoomInstance.attach(img)
+          }
+        }, 300)
       })
     }
   }, 800)
