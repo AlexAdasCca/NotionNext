@@ -58,6 +58,9 @@ const Header = props => {
       const nav = document.querySelector('#sticky-nav')
       // 首页和文章页会有头图
       const header = document.querySelector('#header')
+
+      const mask = document.querySelector('#nav-mask')
+
       // 导航栏和头图是否重叠
       const scrollInHeader =
         header && (scrollS < 10 || scrollS < header?.clientHeight - 50) // 透明导航条的条件
@@ -65,19 +68,19 @@ const Header = props => {
       // const textWhite = header && scrollInHeader
 
       if (scrollInHeader) {
-        nav && nav.classList.add('bg-gradient-to-b')
-        nav && nav.classList.add('from-black/45')
         nav && nav.classList.replace('bg-white', 'bg-none')
         nav && nav.classList.replace('border', 'border-transparent')
-        //nav && nav.classList.replace('drop-shadow-md', 'shadow-none')
-        //nav && nav.classList.replace('dark:bg-hexo-black-gray', 'transparent')
+        nav && nav.classList.replace('drop-shadow-md', 'shadow-none')
+        nav && nav.classList.replace('dark:bg-hexo-black-gray', 'transparent')
+
+        mask?.classList.replace('opacity-0', 'opacity-100')
       } else {
-        nav && nav.classList.remove('bg-gradient-to-b')
-        nav && nav.classList.remove('from-black/45')
         nav && nav.classList.replace('bg-none', 'bg-white')
         nav && nav.classList.replace('border-transparent', 'border')
-        // nav && nav.classList.replace('shadow-none', 'drop-shadow-md')
-        // nav && nav.classList.replace('transparent', 'dark:bg-hexo-black-gray')
+        nav && nav.classList.replace('shadow-none', 'drop-shadow-md')
+        nav && nav.classList.replace('transparent', 'dark:bg-hexo-black-gray')
+
+        mask?.classList.replace('opacity-100', 'opacity-0')
       }
 
       if (scrollInHeader) {
@@ -149,13 +152,18 @@ const Header = props => {
   return (
     <div id='top-nav' className='z-40'>
       <SearchDrawer cRef={searchDrawer} slot={searchDrawerSlot} />
-
+      
+      {/* 渐变遮罩层 */}
+      <div
+        id="nav-mask"
+        className="fixed top-0 left-0 w-full h-24 pointer-events-none z-10 bg-gradient-to-b from-black/45 to-transparent opacity-0"
+      />
       {/* 导航栏 */}
       <div
         id='sticky-nav'
         style={{ backdropFilter: 'blur(3px)' }}
         className={
-          'top-0 duration-300 transition-all  drop-shadow-md fixed bg-none dark:bg-hexo-black-gray dark:text-gray-200 text-black w-full z-20 transform border-transparent dark:border-transparent'
+          'top-0 duration-300 transition-all  shadow-none fixed bg-none dark:bg-hexo-black-gray dark:text-gray-200 text-black w-full z-20 transform border-transparent dark:border-transparent'
         }>
         <div className='w-full flex justify-between items-center px-4 py-2'>
           <div className='flex'>
