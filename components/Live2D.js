@@ -67,13 +67,19 @@ export default function Live2D() {
 
     const handleMouseMove = (e) => {
       if (!isDragging.current) return
-      const newX = e.clientX - offset.current.x
-      const newY = e.clientY - offset.current.y
-      const maxX = window.innerWidth - canvas.offsetWidth
-      const maxY = window.innerHeight - canvas.offsetHeight
+      const canvas = canvasRef.current
+      if (!canvas) return
 
-      const clampedX = Math.max(0, Math.min(newX, maxX))
-      const clampedY = Math.max(0, Math.min(newY, maxY))
+      // 计算新坐标(考虑到使用了缩放，所以位置判断也需要考虑这一点)
+      const newX = e.clientX - offset.current.x // 新X坐标
+      const newY = e.clientY - offset.current.y // 新Y坐标
+      const scaledWidth = canvas.offsetWidth * scale // 缩放后的宽度
+      const scaledHeight = canvas.offsetHeight * scale // 缩放后的高度
+      const maxX = window.innerWidth - scaledWidth // 最大X坐标
+      const maxY = window.innerHeight - scaledHeight // 最大Y坐标
+
+      const clampedX = Math.max(0, Math.min(newX, maxX)) // 限制X坐标
+      const clampedY = Math.max(0, Math.min(newY, maxY)) // 限制Y坐标
 
       canvas.style.left = `${clampedX}px`
       canvas.style.top = `${clampedY}px`
