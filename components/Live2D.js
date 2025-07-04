@@ -33,13 +33,13 @@ export default function Live2D() {
     canvas.width = width
     canvas.height = height
     canvas.style.position = 'fixed'
-    canvas.style.left = '0px'
-    canvas.style.top = '0px'
+    canvas.style.left = `${position.x}px`
+    canvas.style.top = `${position.y}px`
     canvas.style.zIndex = '99999'
     canvas.style.pointerEvents = 'auto'
     canvas.style.cursor = 'move'
     canvas.style.transformOrigin = 'bottom right'
-    canvas.style.transform = `translate(${position.x}px, ${position.y}px) scale(${scale})`
+    canvas.style.transform = `scale(${scale})`
 
     document.body.appendChild(canvas)
     canvasRef.current = canvas
@@ -62,8 +62,8 @@ export default function Live2D() {
       isDragging.current = true
       const rect = canvas.getBoundingClientRect()
       offset.current = {
-        x: (e.clientX - rect.left) / scale,
-        y: (e.clientY - rect.top) / scale
+        x: (e.clientX - rect.left),
+        y: (e.clientY - rect.top)
       }
     }
 
@@ -72,8 +72,8 @@ export default function Live2D() {
       const canvas = canvasRef.current
       if (!canvas) return
 
-      const newX = e.clientX - offset.current.x * scale
-      const newY = e.clientY - offset.current.y * scale
+      const newX = e.clientX - offset.current.x
+      const newY = e.clientY - offset.current.y
 
       const scaledWidth = canvas.offsetWidth * scale
       const scaledHeight = canvas.offsetHeight * scale
@@ -84,7 +84,6 @@ export default function Live2D() {
       const clampedX = Math.max(0, Math.min(newX, maxX))
       const clampedY = Math.max(0, Math.min(newY, maxY))
 
-      canvas.style.transform = `translate(${clampedX}px, ${clampedY}px) scale(${scale})`
       setPosition({ x: clampedX, y: clampedY }) // 保存位置状态
     }
 
