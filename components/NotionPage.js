@@ -168,9 +168,27 @@ const processGalleryImg = zoom => {
       }
 
       const cards = document.getElementsByClassName('notion-collection-card')
-      for (const e of cards) {
-        e.removeAttribute('href')
+      for (const card of cards) {
+        card.removeAttribute('href')
+
+        // 阻止非图区域误点 + 不影响 zoom
+        card.addEventListener('click', e => {
+          if (e.target.tagName !== 'IMG') {
+            e.preventDefault()
+            e.stopPropagation()
+          }
+        })
       }
+
+      // 强制点击空白处关闭 zoom
+      document.body.addEventListener('click', e => {
+        const zoomInstance = zoomRef?.current
+        if (!zoomInstance || !zoomInstance.getZoomedImage()) return
+
+        if (!e.target.closest('.medium-zoom-image')) {
+          zoomInstance.close()
+        }
+      })
     }
   }, 800)
 }
