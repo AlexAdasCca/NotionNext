@@ -13,8 +13,8 @@ export default function Live2D() {
   const showPet = JSON.parse(siteConfig('WIDGET_PET'))
   const petLink = siteConfig('WIDGET_PET_LINK')
   const petSwitchTheme = siteConfig('WIDGET_PET_SWITCH_THEME')
-  const width = BLOG.WIDGET_PET_WIDTH || 280 // 默认挂件高度
-  const height = BLOG.WIDGET_PET_HEIGHT || 250 // 默认挂件宽度
+  const width = siteConfig('WIDGET_PET_WIDTH') || 280 // 默认挂件宽度
+  const height = siteConfig('WIDGET_PET_HEIGHT') || 250 // 默认挂件高度
 
   useEffect(() => {
     if (showPet && !isMobile()) {
