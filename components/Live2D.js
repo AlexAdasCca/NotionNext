@@ -11,6 +11,7 @@ export default function Live2D() {
   const petSwitchTheme = siteConfig('WIDGET_PET_SWITCH_THEME')
   const width = siteConfig('WIDGET_PET_WIDTH') || 280
   const height = siteConfig('WIDGET_PET_HEIGHT') || 250
+  const scale = siteConfig('WIDGET_PET_SCALE') || 1.0
   const popupMode = siteConfig('WIDGET_PET_POPUP_MODE') === true
 
   const canvasRef = useRef(null)
@@ -35,6 +36,8 @@ export default function Live2D() {
     canvas.style.zIndex = '99999'
     canvas.style.pointerEvents = 'auto'
     canvas.style.cursor = 'move'
+    canvas.style.transform = `scale(${scale})`
+    canvas.style.transformOrigin = 'bottom right'
 
     document.body.appendChild(canvas)
     canvasRef.current = canvas
@@ -66,8 +69,14 @@ export default function Live2D() {
       if (!isDragging.current) return
       const newX = e.clientX - offset.current.x
       const newY = e.clientY - offset.current.y
-      canvas.style.left = `${newX}px`
-      canvas.style.top = `${newY}px`
+      const maxX = window.innerWidth - canvas.offsetWidth
+      const maxY = window.innerHeight - canvas.offsetHeight
+
+      const clampedX = Math.max(0, Math.min(newX, maxX))
+      const clampedY = Math.max(0, Math.min(newY, maxY))
+
+      canvas.style.left = `${clampedX}px`
+      canvas.style.top = `${clampedY}px`
     }
 
     const handleMouseUp = () => (isDragging.current = false)
@@ -136,6 +145,10 @@ export default function Live2D() {
       onClick={handleClick}
       onMouseDown={handleMouseDown}
       className='cursor-move'
+      style={{
+        zIndex: 9999,
+        pointerEvents: 'auto'
+      }}
     />
   )
 }
