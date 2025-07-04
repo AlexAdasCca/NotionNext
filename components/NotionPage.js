@@ -155,50 +155,41 @@ const processDisableDatabaseUrl = () => {
 /**
  * gallery视图，点击后是放大图片还是跳转到gallery的内部页面
  */
-const processGalleryImg = zoom => {
+const processGalleryImg = (zoom, zoomRef) => {
   setTimeout(() => {
-    if (isBrowser) {
-      const imgList = document?.querySelectorAll(
-        '.notion-collection-card-cover img'
-      )
-      if (imgList && zoom) {
-        for (let i = 0; i < imgList.length; i++) {
-          zoom.attach(imgList[i])
+    if (!isBrowser || !zoom) return
+
+    const imgList = document?.querySelectorAll('.notion-collection-card-cover img')
+    if (imgList) {
+      zoom.attach([...imgList])
+    }
+
+    const cards = document.querySelectorAll('.notion-gallery-view a.notion-collection-card')
+    for (const card of cards) {
+      card.removeAttribute('href')
+      card.addEventListener('click', e => {
+        if (e.target.tagName !== 'IMG') {
+          e.preventDefault()
+          e.stopPropagation()
         }
-      }
-
-      const cards = document.getElementsByClassName('notion-collection-card')
-      for (const card of cards) {
-        card.removeAttribute('href')
-
-        // 阻止非图区域误点 + 不影响 zoom
-        card.addEventListener('click', e => {
-          if (e.target.tagName !== 'IMG') {
-            e.preventDefault()
-            e.stopPropagation()
-          }
-        })
-      }
-
-      // 强制点击空白处关闭 zoom
-      document.body.addEventListener('click', e => {
-        const zoomInstance = zoomRef?.current
-        if (!zoomInstance || !zoomInstance.getZoomedImage()) return
-
-        if (!e.target.closest('.medium-zoom-image')) {
-          zoomInstance.close()
-        }
-
-        setTimeout(() => {
-          if (img) {
-            zoomInstance.detach(img)
-            zoomInstance.attach(img)
-          }
-        }, 300)
       })
     }
+
+    // 点击遮罩层或图片时关闭
+    document.body.addEventListener('click', e => {
+      const zoomInstance = zoomRef?.current
+      const isImageClick = e.target.classList.contains('medium-zoom-image')
+      const isOverlayClick = e.target.classList.contains('medium-zoom-overlay')
+      const isPreviewMode = document.body.classList.contains('medium-zoom--opened')
+
+      if (!zoomInstance || !zoomInstance.getZoomedImage()) return
+      if (!isImageClick && isOverlayClick && isPreviewMode) {
+        zoomInstance.close()
+      }
+    })
   }, 800)
 }
+
 
 /**
  * 根据url参数自动滚动到锚位置
