@@ -65,13 +65,15 @@ const Header = props => {
       // const textWhite = header && scrollInHeader
 
       if (scrollInHeader) {
-        nav && nav.classList.add('bg-gradient-to-b from-black/45')
+        nav && nav.classList.add('bg-gradient-to-b')
+        nav && nav.classList.add('from-black/45')
         nav && nav.classList.replace('bg-white', 'bg-none')
         nav && nav.classList.replace('border', 'border-transparent')
         //nav && nav.classList.replace('drop-shadow-md', 'shadow-none')
         //nav && nav.classList.replace('dark:bg-hexo-black-gray', 'transparent')
       } else {
-        nav && nav.classList.remove('bg-gradient-to-b from-black/45')
+        nav && nav.classList.remove('bg-gradient-to-b')
+        nav && nav.classList.remove('from-black/45')
         nav && nav.classList.replace('bg-none', 'bg-white')
         nav && nav.classList.replace('border-transparent', 'border')
         // nav && nav.classList.replace('shadow-none', 'drop-shadow-md')
