@@ -65,16 +65,17 @@ const Header = props => {
       // const textWhite = header && scrollInHeader
 
       if (scrollInHeader) {
-        //nav && nav.classList.add('from black/45')
+        nav && nav.classList.add('bg-gradient-to-b from-black/45')
         nav && nav.classList.replace('bg-white', 'bg-none')
         nav && nav.classList.replace('border', 'border-transparent')
-        nav && nav.classList.replace('drop-shadow-md', 'shadow-none')
-        nav && nav.classList.replace('dark:bg-hexo-black-gray', 'transparent')
+        //nav && nav.classList.replace('drop-shadow-md', 'shadow-none')
+        //nav && nav.classList.replace('dark:bg-hexo-black-gray', 'transparent')
       } else {
+        nav && nav.classList.remove('bg-gradient-to-b from-black/45')
         nav && nav.classList.replace('bg-none', 'bg-white')
         nav && nav.classList.replace('border-transparent', 'border')
-        nav && nav.classList.replace('shadow-none', 'drop-shadow-md')
-        nav && nav.classList.replace('transparent', 'dark:bg-hexo-black-gray')
+        // nav && nav.classList.replace('shadow-none', 'drop-shadow-md')
+        // nav && nav.classList.replace('transparent', 'dark:bg-hexo-black-gray')
       }
 
       if (scrollInHeader) {
@@ -152,7 +153,7 @@ const Header = props => {
         id='sticky-nav'
         style={{ backdropFilter: 'blur(3px)' }}
         className={
-          'top-0 duration-300 transition-all  shadow-none bg-gradient-to-b from-black/45 fixed bg-none dark:bg-hexo-black-gray dark:text-gray-200 text-black w-full z-20 transform border-transparent dark:border-transparent'
+          'top-0 duration-300 transition-all  drop-shadow-md fixed bg-none dark:bg-hexo-black-gray dark:text-gray-200 text-black w-full z-20 transform border-transparent dark:border-transparent'
         }>
         <div className='w-full flex justify-between items-center px-4 py-2'>
           <div className='flex'>
