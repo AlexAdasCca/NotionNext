@@ -206,7 +206,18 @@ const processGalleryImg = (zoom, zoomRef) => {
     for (const card of cards) {
       card.removeAttribute('href')
       card.addEventListener('click', e => {
-        if (e.target.tagName !== 'IMG') {
+        const isImage = e.target.tagName === 'IMG'
+        const isLink = e.target.closest('a')
+      
+        if (isImage) {
+          // 阻止图片触发链接跳转（Zoom）
+          e.preventDefault()
+          e.stopPropagation()
+        }
+      
+        if (!isImage && !isLink) {
+          // 非图片 & 非链接，阻止跳转
+          // 如果点击的是链接，就让浏览器执行跳转
           e.preventDefault()
           e.stopPropagation()
         }
