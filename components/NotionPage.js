@@ -43,8 +43,6 @@ const NotionPage = ({ post, className }) => {
       processGalleryImg(zoomRef?.current, zoomRef)
     }
 
-    fixBrokenCardLinks()
-
     // 页内数据库点击禁止跳转，只能查看
     if (POST_DISABLE_DATABASE_CLICK) {
       processDisableDatabaseUrl()
@@ -116,6 +114,44 @@ const NotionPage = ({ post, className }) => {
 
     // 清理定时器，防止组件卸载时执行
     return () => clearTimeout(timer)
+  }, [post])
+
+  useEffect(() => {
+    if (!isBrowser) return
+  
+    const observer = new MutationObserver( () => {  // mutations
+      const targetExists = document.querySelector('.notion-collection-card-body')
+          if (targetExists) {
+            fixBrokenCardLinks()
+          }
+          
+      // for (const mutation of mutations) {
+      //   for (const node of mutation.addedNodes) {
+      //     if (
+      //       node.nodeType === 1 &&
+      //       node.matches?.('.notion-collection-card-body')
+      //     ) {
+      //       fixBrokenCardLinks()
+      //       return
+      //     }
+      //     // 或者递归检查子元素
+      //     if (
+      //       node.nodeType === 1 &&
+      //       node.querySelector?.('.notion-collection-card-body')
+      //     ) {
+      //       fixBrokenCardLinks()
+      //       return
+      //     }
+      //   }
+      // }
+    })
+  
+    observer.observe(document.getElementById('notion-article'), {
+      childList: true,
+      subtree: true
+    })
+  
+    return () => observer.disconnect()
   }, [post])
 
   return (
@@ -203,25 +239,25 @@ const processGalleryImg = (zoom, zoomRef) => {
 
 // 修复url跳转
 const fixBrokenCardLinks = () => {
-  const brokenForms = document.querySelectorAll(
-    '#notion-article form[action][target="_blank"] > input[type="submit"]'
-  )
+  const forms = document.querySelectorAll('.notion-collection-card-body form[action]')
 
-  brokenForms.forEach(input => {
-    const form = input.parentElement
-    if (!form) return
+  forms.forEach(form => {
+    if (form.dataset.processedUrl === 'true') return
+    form.dataset.processedUrl = 'true'
+
+    const input = form.querySelector('input[type="submit"]')
+    if (!input) return
 
     const url = form.getAttribute('action')
     const label = input.value || url
 
-    const link = document.createElement('a')
-    link.href = url
-    link.target = '_blank'
-    link.className = input.className
-    link.innerText = label
+    const a = document.createElement('a')
+    a.href = url
+    a.target = form.getAttribute('target') || '_blank'
+    a.className = input.className
+    a.innerText = label
 
-    // 替换整个 <form> 为 <a>
-    form.replaceWith(link)
+    form.replaceWith(a)
   })
 }
 
