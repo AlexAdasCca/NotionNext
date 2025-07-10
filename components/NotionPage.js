@@ -210,9 +210,8 @@ const processGalleryImg = (zoom, zoomRef) => {
         const isLink = e.target.closest('a')
       
         if (isImage) {
-          // 阻止图片触发链接跳转（Zoom）
+          // 阻止图片触发链接跳转
           e.preventDefault()
-          e.stopPropagation()
         }
       
         if (!isImage && !isLink) {
