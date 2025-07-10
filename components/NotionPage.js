@@ -209,10 +209,10 @@ const processGalleryImg = (zoom, zoomRef) => {
         const isImage = e.target.tagName === 'IMG'
         const isLink = e.target.closest('a')
       
-        if (isImage) {
-          // 阻止图片触发链接跳转
-          e.preventDefault()
-        }
+        // if (isImage) {
+        //   // 阻止图片触发链接跳转
+        //   e.preventDefault()
+        // }
       
         if (!isImage && !isLink) {
           // 非图片 & 非链接，阻止跳转
