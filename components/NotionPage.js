@@ -43,6 +43,8 @@ const NotionPage = ({ post, className }) => {
       processGalleryImg(zoomRef?.current, zoomRef)
     }
 
+    fixBrokenCardLinks()
+
     // 页内数据库点击禁止跳转，只能查看
     if (POST_DISABLE_DATABASE_CLICK) {
       processDisableDatabaseUrl()
@@ -198,6 +200,31 @@ const processGalleryImg = (zoom, zoomRef) => {
     })
   }, 800)
 }
+
+// 修复url跳转
+const fixBrokenCardLinks = () => {
+  const brokenForms = document.querySelectorAll(
+    '#notion-article form[action][target="_blank"] > input[type="submit"]'
+  )
+
+  brokenForms.forEach(input => {
+    const form = input.parentElement
+    if (!form) return
+
+    const url = form.getAttribute('action')
+    const label = input.value || url
+
+    const link = document.createElement('a')
+    link.href = url
+    link.target = '_blank'
+    link.className = input.className
+    link.innerText = label
+
+    // 替换整个 <form> 为 <a>
+    form.replaceWith(link)
+  })
+}
+
 
 /**
  * 根据url参数自动滚动到锚位置
