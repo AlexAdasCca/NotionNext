@@ -40,7 +40,7 @@ const NotionPage = ({ post, className }) => {
     // 相册视图点击禁止跳转，只能放大查看图片
     if (POST_DISABLE_GALLERY_CLICK) {
       // 针对页面中的gallery视图，点击后是放大图片还是跳转到gallery的内部页面
-      processGalleryImg(zoomRef?.current)
+      processGalleryImg(zoomRef?.current, zoomRef)
     }
 
     // 页内数据库点击禁止跳转，只能查看
@@ -116,6 +116,44 @@ const NotionPage = ({ post, className }) => {
     return () => clearTimeout(timer)
   }, [post])
 
+  useEffect(() => {
+    if (!isBrowser) return
+  
+    const observer = new MutationObserver( () => {  // mutations
+      const targetExists = document.querySelector('.notion-collection-card-body')
+          if (targetExists) {
+            fixBrokenCardLinks()
+          }
+          
+      // for (const mutation of mutations) {
+      //   for (const node of mutation.addedNodes) {
+      //     if (
+      //       node.nodeType === 1 &&
+      //       node.matches?.('.notion-collection-card-body')
+      //     ) {
+      //       fixBrokenCardLinks()
+      //       return
+      //     }
+      //     // 或者递归检查子元素
+      //     if (
+      //       node.nodeType === 1 &&
+      //       node.querySelector?.('.notion-collection-card-body')
+      //     ) {
+      //       fixBrokenCardLinks()
+      //       return
+      //     }
+      //   }
+      // }
+    })
+  
+    observer.observe(document.getElementById('notion-article'), {
+      childList: true,
+      subtree: true
+    })
+  
+    return () => observer.disconnect()
+  }, [post])
+
   return (
     <div
       id='notion-article'
@@ -155,25 +193,84 @@ const processDisableDatabaseUrl = () => {
 /**
  * gallery视图，点击后是放大图片还是跳转到gallery的内部页面
  */
-const processGalleryImg = zoom => {
+const processGalleryImg = (zoom, zoomRef) => {
   setTimeout(() => {
-    if (isBrowser) {
-      const imgList = document?.querySelectorAll(
-        '.notion-collection-card-cover img'
-      )
-      if (imgList && zoom) {
-        for (let i = 0; i < imgList.length; i++) {
-          zoom.attach(imgList[i])
+    if (!isBrowser || !zoom) return
+
+    const imgList = document?.querySelectorAll('.notion-collection-card-cover img')
+    if (imgList) {
+      zoom.attach([...imgList])
+    }
+
+    const cards = document.getElementsByClassName('notion-collection-card')
+    for (const card of cards) {
+      card.removeAttribute('href')
+      card.addEventListener('click', e => {
+        const isImage = e.target.tagName === 'IMG'
+        const isLink = e.target.closest('a')
+      
+        // if (isImage) {
+        //   // 阻止图片触发链接跳转
+        //   e.preventDefault()
+        // }
+      
+        if (!isImage && !isLink) {
+          // 非图片 & 非链接，阻止跳转
+          // 如果点击的是链接，就让浏览器执行跳转
+          e.preventDefault()
+          e.stopPropagation()
         }
+      })
+    }
+
+    // 点击遮罩层时关闭预览
+    document.body.addEventListener('click', e => {
+      const zoomInstance = zoomRef?.current
+      const isImageClick = e.target.classList.contains('medium-zoom-image')
+      const isOverlayClick = e.target.classList.contains('medium-zoom-overlay')
+      const isPreviewMode = document.body.classList.contains('medium-zoom--opened')
+
+      if (!zoomInstance || !zoomInstance.getZoomedImage()) return
+      if (!isImageClick && isOverlayClick && isPreviewMode) {
+        zoomInstance.close()
       }
 
-      const cards = document.getElementsByClassName('notion-collection-card')
-      for (const e of cards) {
-        e.removeAttribute('href')
-      }
-    }
+      // 稍后重新 attach 一次，刷新状态
+      setTimeout(() => {
+        zoomInstance.detach()
+        const imgList = document?.querySelectorAll('.notion-collection-card-cover img')
+        if (imgList?.length) {
+          zoomInstance.attach([...imgList])
+        }
+      }, 500) // 在动画结束后执行
+    })
   }, 800)
 }
+
+// 修复url跳转
+const fixBrokenCardLinks = () => {
+  const forms = document.querySelectorAll('.notion-collection-card-body form[action]')
+
+  forms.forEach(form => {
+    if (form.dataset.processedUrl === 'true') return
+    form.dataset.processedUrl = 'true'
+
+    const input = form.querySelector('input[type="submit"]')
+    if (!input) return
+
+    const url = form.getAttribute('action')
+    const label = input.value || url
+
+    const a = document.createElement('a')
+    a.href = url
+    a.target = form.getAttribute('target') || '_blank'
+    a.className = input.className
+    a.innerText = label
+
+    form.replaceWith(a)
+  })
+}
+
 
 /**
  * 根据url参数自动滚动到锚位置

@@ -58,6 +58,9 @@ const Header = props => {
       const nav = document.querySelector('#sticky-nav')
       // 首页和文章页会有头图
       const header = document.querySelector('#header')
+
+      const mask = document.querySelector('#nav-mask')
+
       // 导航栏和头图是否重叠
       const scrollInHeader =
         header && (scrollS < 10 || scrollS < header?.clientHeight - 50) // 透明导航条的条件
@@ -69,11 +72,15 @@ const Header = props => {
         nav && nav.classList.replace('border', 'border-transparent')
         nav && nav.classList.replace('drop-shadow-md', 'shadow-none')
         nav && nav.classList.replace('dark:bg-hexo-black-gray', 'transparent')
+
+        mask?.classList.replace('opacity-0', 'opacity-100')
       } else {
         nav && nav.classList.replace('bg-none', 'bg-white')
         nav && nav.classList.replace('border-transparent', 'border')
         nav && nav.classList.replace('shadow-none', 'drop-shadow-md')
         nav && nav.classList.replace('transparent', 'dark:bg-hexo-black-gray')
+
+        mask?.classList.replace('opacity-100', 'opacity-0')
       }
 
       if (scrollInHeader) {
@@ -145,7 +152,12 @@ const Header = props => {
   return (
     <div id='top-nav' className='z-40'>
       <SearchDrawer cRef={searchDrawer} slot={searchDrawerSlot} />
-
+      
+      {/* 渐变遮罩层 */}
+      <div
+        id="nav-mask"
+        className="fixed top-0 left-0 w-full h-24 pointer-events-none z-10 bg-gradient-to-b from-black/45 to-transparent opacity-0"
+      />
       {/* 导航栏 */}
       <div
         id='sticky-nav'
